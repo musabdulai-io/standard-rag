@@ -22,6 +22,7 @@ from app.features.rag.schemas import (
     SearchResponse,
     SearchResult,
 )
+from app.features.rag.rate_limiter import get_rate_limiter
 from app.features.rag.services import DocumentService, IndexingService, SearchService
 
 router = APIRouter(prefix="/rag", tags=["RAG"])
@@ -37,6 +38,10 @@ async def upload_document(
     # Validate session_id
     if not session_id or len(session_id) != 36:
         raise ValidationError("Invalid session_id. Must be a valid UUID.")
+
+    # Rate limiting
+    rate_limiter = get_rate_limiter()
+    await rate_limiter.check_and_record(f"upload:{session_id}")
 
     # Validate file type
     allowed_types = [
@@ -124,6 +129,10 @@ async def search_documents(
     request: SearchRequest,
 ):
     """Search indexed documents using semantic search."""
+    # Rate limiting
+    rate_limiter = get_rate_limiter()
+    await rate_limiter.check_and_record(f"search:{request.session_id}")
+
     search_service = SearchService()
     results = await search_service.search(
         query=request.query,
@@ -147,6 +156,10 @@ async def query_documents(
     request: QueryRequest,
 ):
     """Ask a question and get an AI-generated answer based on relevant documents."""
+    # Rate limiting
+    rate_limiter = get_rate_limiter()
+    await rate_limiter.check_and_record(f"query:{request.session_id}")
+
     # Retrieve relevant chunks
     search_service = SearchService()
     results = await search_service.search(
