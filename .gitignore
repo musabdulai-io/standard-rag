@@ -55,7 +55,7 @@ yarn-debug.log*
 yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
-public/runtime-env.js
+**/public/runtime-env.js
 
 # Storage
 storage/
