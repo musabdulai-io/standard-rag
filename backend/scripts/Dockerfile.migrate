@@ -1,0 +1,41 @@
+# Migration verify container for Cloud Deploy
+# Built FROM backend image to inherit alembic, migrations, and Python environment
+# This approach is similar to frontend warmup (which uses cloud-sdk base)
+# but leverages the backend image that already has everything needed
+
+# Use a build arg so Cloud Build can pass the backend image dynamically
+ARG BACKEND_IMAGE
+FROM ${BACKEND_IMAGE}
+
+# Switch to root to install packages (backend image runs as 'app' user)
+USER root
+
+# Install Google Cloud SDK for secret access
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    gnupg \
+    lsb-release && \
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | \
+    tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+    gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
+    apt-get update && \
+    apt-get install -y google-cloud-sdk && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Cloud SQL Auth Proxy for database connectivity in Cloud Build
+RUN curl -fsSL https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.18.3/cloud-sql-proxy.linux.amd64 \
+    -o /usr/local/bin/cloud-sql-proxy && \
+    chmod +x /usr/local/bin/cloud-sql-proxy
+
+# Copy migration verify script and ensure it is executable
+COPY migrate-verify.sh /migrate-verify.sh
+RUN chmod 755 /migrate-verify.sh
+
+# Switch back to app user for security
+USER app
+
+WORKDIR /app
+
+# The script will be executed via the command in skaffold.yaml
