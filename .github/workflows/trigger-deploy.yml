@@ -27,7 +27,7 @@ jobs:
           DEPLOY_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN }}
         run: |
           # Clone private deploy repo
-          git clone https://x-access-token:${DEPLOY_TOKEN}@github.com/${{ github.repository_owner }}/secure-rag-kit-deploy.git deploy
+          git clone https://x-access-token:${DEPLOY_TOKEN}@github.com/${{ github.repository_owner }}/standard-rag-deploy.git deploy
           cd deploy
 
           # Update trigger file with app commit SHA
