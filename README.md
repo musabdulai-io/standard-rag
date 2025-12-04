@@ -17,7 +17,7 @@ A standard RAG (Retrieval-Augmented Generation) system built with industry-stand
 - **Vector DB**: Pinecone (Serverless)
 - **Database**: PostgreSQL
 - **LLM**: OpenAI (GPT-4o-mini)
-- **Document Parser**: Unstructured
+- **Document Parser**: pypdf
 - **Frontend**: Next.js + Material-UI
 
 ## Quick Start
@@ -32,8 +32,9 @@ A standard RAG (Retrieval-Augmented Generation) system built with industry-stand
 
 ### Setup
 
-1. Clone and navigate to the project:
+1. Clone the repository:
 ```bash
+git clone https://github.com/musabdulai-io/standard-rag.git
 cd standard-rag
 ```
 
@@ -127,3 +128,4 @@ MIT
 - **Email**: [hello@musabdulai.com](mailto:hello@musabdulai.com)
 - **Book a call**: [Schedule a meeting](https://calendly.com/musabdulai/ai-security-check)
 - **Website**: [musabdulai.com](https://musabdulai.com)
+- **Try it out**: [rag.musabdulai.com](https://rag.musabdulai.com)
