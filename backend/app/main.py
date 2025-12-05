@@ -20,9 +20,8 @@ async def _auto_seed_if_needed():
     """Seed sample documents on first run if none exist."""
     from sqlalchemy import text
 
-    from app.core.database import async_session_factory, init_db
+    from app.core.database import async_session_factory
 
-    await init_db()
     async with async_session_factory() as session:
         result = await session.execute(
             text("SELECT COUNT(*) FROM documents WHERE is_sample = true")
