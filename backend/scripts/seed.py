@@ -9,7 +9,7 @@ Usage:
 import asyncio
 from pathlib import Path
 
-from app.core.database import async_session_factory, init_db
+from app.core.database import async_session_factory
 from app.core.observability import logs
 from app.features.rag.services import DocumentService, IndexingService
 
@@ -279,9 +279,6 @@ Reranking improves precision:
 async def seed_documents():
     """Seed the database with sample documents."""
     logs.info("Starting seed process", "seed")
-
-    # Initialize database
-    await init_db()
 
     # Clean up Pinecone vectors for sample docs FIRST
     from app.core.pinecone import get_pinecone_store

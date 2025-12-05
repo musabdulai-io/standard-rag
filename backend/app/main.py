@@ -16,25 +16,22 @@ from app.core.observability import logs
 from app.core.pinecone import get_pinecone_store
 
 
-async def _auto_seed_if_needed():
-    """Seed sample documents on first run if none exist."""
-    from sqlalchemy import text
+async def _try_seed():
+    """Attempt to seed sample documents. Skips gracefully if tables don't exist."""
+    try:
+        from sqlalchemy import text
+        from app.core.database import async_session_factory
 
-    from app.core.database import async_session_factory
-
-    async with async_session_factory() as session:
-        result = await session.execute(
-            text("SELECT COUNT(*) FROM documents WHERE is_sample = true")
-        )
-        count = result.scalar()
-
-        if count == 0:
-            logs.info("No sample docs found, seeding demo data...", "main")
-            from scripts.seed import seed_documents
-
-            await seed_documents()
-        else:
-            logs.info(f"Found {count} sample docs, skipping seed", "main")
+        async with async_session_factory() as session:
+            result = await session.execute(
+                text("SELECT COUNT(*) FROM documents WHERE is_sample = true")
+            )
+            if result.scalar() == 0:
+                logs.info("Seeding sample documents...", "main")
+                from scripts.seed import seed_documents
+                await seed_documents()
+    except Exception as e:
+        logs.warning(f"Seed skipped (tables may not exist yet): {e}", "main")
 
 
 @asynccontextmanager
@@ -45,8 +42,8 @@ async def lifespan(app: FastAPI):
     # Initialize Pinecone
     pinecone = await get_pinecone_store()
 
-    # Auto-seed demo data on first run
-    await _auto_seed_if_needed()
+    # Try to seed (skips if tables don't exist yet)
+    await _try_seed()
 
     logs.info("Services initialized", "main")
 
