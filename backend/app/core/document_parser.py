@@ -58,7 +58,7 @@ class DocumentParser:
             return content.decode("utf-8", errors="ignore")
 
     async def _parse_pdf(self, content: bytes, filename: str) -> str:
-        """Extract text from PDF using pypdf."""
+        """Extract text from PDF using pypdf, with OCR fallback for scanned PDFs."""
         from pypdf import PdfReader
 
         reader = PdfReader(io.BytesIO(content))
@@ -71,6 +71,13 @@ class DocumentParser:
 
         text = "\n\n".join(text_parts)
 
+        # If no text extracted (likely scanned PDF), try OCR
+        if len(text.strip()) < 100 and len(reader.pages) > 0:
+            logs.info(f"PDF appears to be scanned, attempting OCR: {filename}", "parser")
+            ocr_text = await self._parse_pdf_with_ocr(content, filename)
+            if ocr_text:
+                return ocr_text
+
         logs.info(
             f"Parsed PDF: {filename}",
             "parser",
@@ -78,6 +85,40 @@ class DocumentParser:
         )
 
         return text
+
+    async def _parse_pdf_with_ocr(self, content: bytes, filename: str) -> str:
+        """Parse scanned PDF using OCR (pytesseract)."""
+        try:
+            from pdf2image import convert_from_bytes
+            import pytesseract
+        except ImportError as e:
+            logs.warning(f"OCR dependencies not installed: {e}", "parser")
+            return ""
+
+        try:
+            # Convert PDF pages to images
+            images = convert_from_bytes(content, dpi=200)
+            text_parts = []
+
+            for i, image in enumerate(images):
+                # Run OCR on each page
+                text = pytesseract.image_to_string(image)
+                if text.strip():
+                    text_parts.append(f"--- Page {i+1} ---\n{text}")
+
+            text = "\n\n".join(text_parts)
+
+            logs.info(
+                f"Parsed PDF with OCR: {filename}",
+                "parser",
+                metadata={"chars": len(text), "pages": len(images)},
+            )
+
+            return text
+
+        except Exception as e:
+            logs.error(f"OCR failed for {filename}: {e}", "parser")
+            return ""
 
     def _parse_text(self, content: bytes, filename: str) -> str:
         """Parse text/markdown file."""

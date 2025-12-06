@@ -20,6 +20,9 @@ langchain-pinecone>=0.0.3
 # Document parsing
 pypdf>=4.0.0
 openpyxl>=3.1.0  # Excel file parsing
+pytesseract>=0.3.10  # OCR for scanned PDFs
+pdf2image>=1.16.0  # Convert PDF pages to images for OCR
+Pillow>=10.0.0  # Image processing
 
 # Google Cloud (for storage and auth)
 google-auth>=2.0.0
