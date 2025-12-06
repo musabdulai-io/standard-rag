@@ -121,5 +121,7 @@ async def root():
 
 # Import and include routers
 from app.features.rag.routes import router as rag_router
+from app.features.admin.routes import router as admin_router
 
 app.include_router(rag_router, prefix=settings.API_PREFIX)
+app.include_router(admin_router, prefix=settings.API_PREFIX)
