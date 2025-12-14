@@ -1,6 +1,19 @@
+import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { Providers } from './providers';
+
+export const metadata: Metadata = {
+  title: 'Standard RAG | Musah Abdulai',
+  description: 'RAG system with document upload, semantic search, and AI-powered Q&A',
+  authors: [{ name: 'Musah Abdulai', url: 'https://musabdulai.com' }],
+  openGraph: {
+    title: 'Standard RAG | Musah Abdulai',
+    description: 'RAG system with document upload, semantic search, and AI-powered Q&A',
+    url: 'https://rag.musabdulai.com',
+    type: 'website',
+  },
+};
 
 const inter = Inter({
   variable: '--font-inter',
