@@ -1,8 +1,20 @@
 # Standard RAG
 
-A standard RAG (Retrieval-Augmented Generation) system built with industry-standard tools.
+> **WARNING: Intentionally Insecure Demo**
+>
+> This is a deliberately vulnerable RAG application for testing security scanners.
+> **Do NOT deploy publicly.** Run locally only.
 
-**Demo**: [rag.musabdulai.com](https://rag.musabdulai.com)
+## Why This Exists
+
+This repo serves as a **test target** for the [LLM Production Safety Scanner](https://github.com/musabdulai-io/llm-production-safety-scanner). It demonstrates common failure modes in RAG applications:
+
+- No input validation or prompt injection protection
+- No output filtering or guardrails
+- No access controls on retrieved documents
+- No rate limiting or cost controls
+
+Use this to generate sample security reports and understand what vulnerabilities look like in practice.
 
 ## Features
 
@@ -20,13 +32,11 @@ A standard RAG (Retrieval-Augmented Generation) system built with industry-stand
 - **Document Parser**: pypdf
 - **Frontend**: Next.js + Material-UI
 
-## Quick Start
+## Local Setup
 
 ### Prerequisites
 
 - Docker and Docker Compose
-- Python 3.11+
-- Node.js 20+
 - Pinecone API Key
 - OpenAI API Key
 
@@ -38,27 +48,23 @@ git clone https://github.com/musabdulai-io/standard-rag.git
 cd standard-rag
 ```
 
-2. Run the setup script:
+2. Copy environment template:
 ```bash
-./setup.sh
+cp .env.example .env
 ```
 
-3. Update your environment:
+3. Add your API keys to `.env`:
 ```bash
-# Edit .env and add your API keys
-nano .env
+OPENAI_API_KEY=your-openai-api-key
+PINECONE_API_KEY=your-pinecone-api-key
 ```
-
-Required environment variables:
-- `OPENAI_API_KEY` - Your OpenAI API key
-- `PINECONE_API_KEY` - Your Pinecone API key
 
 4. Start the services:
 ```bash
 docker compose up
 ```
 
-5. Access the application:
+5. Access locally:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 - API Docs: http://localhost:8000/docs
@@ -125,7 +131,5 @@ MIT
 
 ## Contact
 
-- **Email**: [hello@musabdulai.com](mailto:hello@musabdulai.com)
-- **Book a call**: [Schedule a meeting](https://calendly.com/musabdulai/ai-security-check)
 - **Website**: [musabdulai.com](https://musabdulai.com)
-- **Try it out**: [rag.musabdulai.com](https://rag.musabdulai.com)
+- **Book a call**: [Schedule a meeting](https://calendly.com/musabdulai/guardrails-sprint)
